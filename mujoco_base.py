@@ -1,4 +1,6 @@
 import mujoco as mj
+from pdb import set_trace
+import numpy as np
 
 
 class MuJoCoBase():
@@ -35,6 +37,10 @@ class MuJoCoBase():
         mj.glfw.glfw.set_mouse_button_callback(self.window, self.mouse_button)
         mj.glfw.glfw.set_scroll_callback(self.window, self.scroll)
 
+        self.cam.azimuth = 90.0
+        self.cam.distance = 4.0
+        self.cam.elevation = -45.0
+
     def keyboard(self, window, key, scancode, act, mods):
         if act == mj.glfw.glfw.PRESS and key == mj.glfw.glfw.KEY_BACKSPACE:
             mj.mj_resetData(self.model, self.data)
@@ -50,18 +56,18 @@ class MuJoCoBase():
             self.window, mj.glfw.glfw.MOUSE_BUTTON_RIGHT) == mj.glfw.glfw.PRESS)
 
         # update mouse position
-        mj.glfw.glfw.get_cursor_pos(window)
+        mj.glfw.glfw.get_cursor_pos(self.window)
 
     def mouse_move(self, window, xpos, ypos):
-        # no buttons down: nothing to do
-        if (not self.button_left) and (not self.button_middle) and (not self.button_right):
-            return
-
         # compute mouse displacement, save
         dx = xpos - self.lastx
         dy = ypos - self.lasty
         self.lastx = xpos
         self.lasty = ypos
+
+        # no buttons down: nothing to do
+        if (not self.button_left) and (not self.button_middle) and (not self.button_right):
+            return
 
         # get current window size
         width, height = mj.glfw.glfw.get_window_size(self.window)
@@ -87,6 +93,7 @@ class MuJoCoBase():
         else:
             action = mj.mjtMouse.mjMOUSE_ZOOM
 
+        print(f"moved camera..., {dx/height}, {dy/height}")
         mj.mjv_moveCamera(self.model, action, dx/height,
                           dy/height, self.scene, self.cam)
 
