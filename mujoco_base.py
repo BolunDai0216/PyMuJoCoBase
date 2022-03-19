@@ -43,14 +43,14 @@ class MuJoCoBase():
     def mouse_button(self, window, button, act, mods):
         # update button state
         self.button_left = (mj.glfw.glfw.get_mouse_button(
-            self.window, mj.glfw.glfw.MOUSE_BUTTON_LEFT) == mj.glfw.glfw.PRESS)
+            window, mj.glfw.glfw.MOUSE_BUTTON_LEFT) == mj.glfw.glfw.PRESS)
         self.button_middle = (mj.glfw.glfw.get_mouse_button(
-            self.window, mj.glfw.glfw.MOUSE_BUTTON_MIDDLE) == mj.glfw.glfw.PRESS)
+            window, mj.glfw.glfw.MOUSE_BUTTON_MIDDLE) == mj.glfw.glfw.PRESS)
         self.button_right = (mj.glfw.glfw.get_mouse_button(
-            self.window, mj.glfw.glfw.MOUSE_BUTTON_RIGHT) == mj.glfw.glfw.PRESS)
+            window, mj.glfw.glfw.MOUSE_BUTTON_RIGHT) == mj.glfw.glfw.PRESS)
 
         # update mouse position
-        mj.glfw.glfw.get_cursor_pos(self.window)
+        mj.glfw.glfw.get_cursor_pos(window)
 
     def mouse_move(self, window, xpos, ypos):
         # compute mouse displacement, save
@@ -64,7 +64,7 @@ class MuJoCoBase():
             return
 
         # get current window size
-        width, height = mj.glfw.glfw.get_window_size(self.window)
+        width, height = mj.glfw.glfw.get_window_size(window)
 
         # get shift key state
         PRESS_LEFT_SHIFT = mj.glfw.glfw.get_key(

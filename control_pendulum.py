@@ -53,9 +53,6 @@ class ContolPendulum(MuJoCoBase):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
-                # # Apply PD controller
-                # self.controller(actuator_type="servo")
-
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
