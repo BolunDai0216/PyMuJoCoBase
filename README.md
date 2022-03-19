@@ -17,6 +17,19 @@ The main purpose of the this repo is providing the starter code required to run 
 
 I plan to translate all of the examples in the [MuJoCo Mini Course](https://pab47.github.io/mujoco.html) into Python. Current progress: (2/12).
 
+- [x] Projectile with drag
+- [x] Control a simple pendulum
+- [ ] Control a double pendulum
+- [ ] Leg swing
+- [ ] Manipulator drawing
+- [ ] Control an underactuated pendulum
+- [ ] Gymnast swing/release on a bar
+- [ ] 2D Hopper
+- [ ] Nonlinear Optimization
+- [ ] Initial Value Problem 
+- [ ] Inverse Kinematics
+- [ ] 2D Biped  
+
 ## Contact
 
 If you have any questions regarding this repo you can contact me at `bd1555 at nyu dot edu`.
