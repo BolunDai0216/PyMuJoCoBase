@@ -1,6 +1,4 @@
 import mujoco as mj
-from pdb import set_trace
-import numpy as np
 
 
 class MuJoCoBase():
@@ -93,7 +91,6 @@ class MuJoCoBase():
         else:
             action = mj.mjtMouse.mjMOUSE_ZOOM
 
-        print(f"moved camera..., {dx/height}, {dy/height}")
         mj.mjv_moveCamera(self.model, action, dx/height,
                           dy/height, self.scene, self.cam)
 
