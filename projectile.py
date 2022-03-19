@@ -41,10 +41,11 @@ class Projectile(MuJoCoBase):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
-                mj.mj_step(self.model, self.data)
-
-                # Apply drag forcee
+                # Apply drag force
                 self.controller()
+
+                # Step simulation environment
+                mj.mj_step(self.model, self.data)
 
             # get framebuffer viewport
             viewport_width, viewport_height = mj.glfw.glfw.get_framebuffer_size(

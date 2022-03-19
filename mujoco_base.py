@@ -119,3 +119,9 @@ class MuJoCoBase():
             mj.glfw.glfw.poll_events()
 
         mj.glfw.glfw.terminate()
+
+    def reset(self):
+        raise NotImplementedError
+
+    def controller(self):
+        raise NotImplementedError
