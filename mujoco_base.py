@@ -10,21 +10,21 @@ class MuJoCoBase():
         self.lastx = 0
         self.lasty = 0
 
-        self.cam = mj.MjvCamera()
-        self.opt = mj.MjvOption()
+        # MuJoCo data structures
+        self.model = mj.MjModel.from_xml_path(xml_path)  # MuJoCo model
+        self.data = mj.MjData(self.model)                # MuJoCo data
+        self.cam = mj.MjvCamera()                        # Abstract camera
+        self.opt = mj.MjvOption()                        # visualization options
 
-        # Create GLFW window
+        # Init GLFW, create window, make OpenGL context current, request v-sync
         mj.glfw.glfw.init()
         self.window = mj.glfw.glfw.create_window(1200, 900, "Demo", None, None)
         mj.glfw.glfw.make_context_current(self.window)
         mj.glfw.glfw.swap_interval(1)
 
+        # initialize visualization data structures
         mj.mjv_defaultCamera(self.cam)
         mj.mjv_defaultOption(self.opt)
-
-        self.model = mj.MjModel.from_xml_path(xml_path)
-        self.data = mj.MjData(self.model)
-
         self.scene = mj.MjvScene(self.model, maxgeom=10000)
         self.context = mj.MjrContext(
             self.model, mj.mjtFontScale.mjFONTSCALE_150.value)
@@ -34,10 +34,6 @@ class MuJoCoBase():
         mj.glfw.glfw.set_cursor_pos_callback(self.window, self.mouse_move)
         mj.glfw.glfw.set_mouse_button_callback(self.window, self.mouse_button)
         mj.glfw.glfw.set_scroll_callback(self.window, self.scroll)
-
-        self.cam.azimuth = 90.0
-        self.cam.distance = 4.0
-        self.cam.elevation = -45.0
 
     def keyboard(self, window, key, scancode, act, mods):
         if act == mj.glfw.glfw.PRESS and key == mj.glfw.glfw.KEY_BACKSPACE:
@@ -106,13 +102,20 @@ class MuJoCoBase():
             while (self.data.time - simstart < 1.0/60.0):
                 mj.mj_step(self.model, self.data)
 
-            viewport = mj.MjrRect(0, 0, 1200, 900)
+            # get framebuffer viewport
+            viewport_width, viewport_height = mj.glfw.glfw.get_framebuffer_size(
+                self.window)
+            viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
+            # Update scene and render
             mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
                                mj.mjtCatBit.mjCAT_ALL.value, self.scene)
             mj.mjr_render(viewport, self.scene, self.context)
 
+            # swap OpenGL buffers (blocking call due to v-sync)
             mj.glfw.glfw.swap_buffers(self.window)
+
+            # process pending GUI events, call GLFW callbacks
             mj.glfw.glfw.poll_events()
 
         mj.glfw.glfw.terminate()
