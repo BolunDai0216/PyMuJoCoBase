@@ -1,7 +1,6 @@
-from pdb import set_trace
-
 import mujoco as mj
 import numpy as np
+from mujoco.glfw import glfw
 
 from mujoco_base import MuJoCoBase
 
@@ -49,7 +48,7 @@ class ContolPendulum(MuJoCoBase):
             self.data.ctrl[2] = 0.0
 
     def simulate(self):
-        while not mj.glfw.glfw.window_should_close(self.window):
+        while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
@@ -57,7 +56,7 @@ class ContolPendulum(MuJoCoBase):
                 mj.mj_step(self.model, self.data)
 
             # get framebuffer viewport
-            viewport_width, viewport_height = mj.glfw.glfw.get_framebuffer_size(
+            viewport_width, viewport_height = glfw.get_framebuffer_size(
                 self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
@@ -67,12 +66,12 @@ class ContolPendulum(MuJoCoBase):
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
-            mj.glfw.glfw.swap_buffers(self.window)
+            glfw.swap_buffers(self.window)
 
             # process pending GUI events, call GLFW callbacks
-            mj.glfw.glfw.poll_events()
+            glfw.poll_events()
 
-        mj.glfw.glfw.terminate()
+        glfw.terminate()
 
 
 def main():

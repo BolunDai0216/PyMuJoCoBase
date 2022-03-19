@@ -1,6 +1,6 @@
 # PyMuJoCoBase
 
-This repo contains starter code and examples for running simulations in MuJoCo with its Python bindings. The repo is inspired by the C code used in Prof.Pranav Bhounsule's [MuJoCo Mini Course](https://pab47.github.io/mujoco.html).
+This repo contains starter code and examples for running simulations in MuJoCo with its Python bindings. The repo is inspired by the C code used in Prof.Pranav Bhounsule's [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html).
 
 ## Contents
 
@@ -15,7 +15,7 @@ The main purpose of the this repo is providing the starter code required to run 
 
 ## TODO
 
-I plan to translate all of the examples in the [MuJoCo Mini Course](https://pab47.github.io/mujoco.html) into Python. Current progress: (2/12).
+I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) into Python. Current progress: (2/12).
 
 - [x] Projectile with drag
 - [x] Control a simple pendulum
@@ -26,9 +26,9 @@ I plan to translate all of the examples in the [MuJoCo Mini Course](https://pab4
 - [ ] Gymnast swing/release on a bar
 - [ ] 2D Hopper
 - [ ] Nonlinear Optimization
-- [ ] Initial Value Problem 
+- [ ] Initial Value Problem
 - [ ] Inverse Kinematics
-- [ ] 2D Biped  
+- [ ] 2D Biped
 
 ## Contact
 
