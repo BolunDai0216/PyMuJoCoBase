@@ -7,7 +7,7 @@ This repo contains starter code and examples for running simulations in MuJoCo w
 The main purpose of the this repo is providing the starter code required to run a MuJoCo simulation with keyboard and mouse callbacks. The base class is in `mujoco_base.py`. To create your own MuJoCo simulation, you can create a new class that inherits `mujoco_base.MuJoCoBase`. An example of this usage is provided in `projectile.py`, the new class should implement the functions
 
 ```[Python]
-- reset()       # Initializes the enviroment
+- reset()       # Initializes the enviroment and control callback
 - controller()  # Adds control actions
 - simulate()    # Copy the simulate() function from 
                 # mujoco_base.MuJoCoBase and add your own twist

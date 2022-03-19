@@ -1,3 +1,5 @@
+from pdb import set_trace
+
 import mujoco as mj
 import numpy as np
 
@@ -7,6 +9,7 @@ from mujoco_base import MuJoCoBase
 class ContolPendulum(MuJoCoBase):
     def __init__(self, xml_path):
         super().__init__(xml_path)
+        self.actuator_type = "torque"
 
     def reset(self):
         # Set initial angle of pendulum
@@ -18,7 +21,9 @@ class ContolPendulum(MuJoCoBase):
         self.cam.elevation = -5
         self.cam.lookat = np.array([0.012768, -0.000000, 1.254336])
 
-    def controller(self, actuator_type="torque"):
+        mj.set_mjcb_control(self.controller)
+
+    def controller(self, model, data):
         """
         This function implements a PD controller
 
@@ -27,12 +32,12 @@ class ContolPendulum(MuJoCoBase):
         the set point. It will be accurate is
         gravity is turned off.
         """
-        if actuator_type == "torque":
+        if self.actuator_type == "torque":
             self.model.actuator_gainprm[0, 0] = 1
             self.data.ctrl[0] = -10 * \
                 (self.data.sensordata[0] - 0.0) - \
                 1 * (self.data.sensordata[1] - 0.0)
-        elif actuator_type == "servo":
+        elif self.actuator_type == "servo":
             kp = 10.0
             self.model.actuator_gainprm[1, 0] = kp
             self.model.actuator_biasprm[1, 1] = -kp
@@ -48,13 +53,11 @@ class ContolPendulum(MuJoCoBase):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
-                # Apply PD controller
-                self.controller(actuator_type="servo")
+                # # Apply PD controller
+                # self.controller(actuator_type="servo")
 
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
-
-            print(self.data.qpos[0])
 
             # get framebuffer viewport
             viewport_width, viewport_height = mj.glfw.glfw.get_framebuffer_size(

@@ -21,7 +21,9 @@ class Projectile(MuJoCoBase):
         self.cam.distance = 8.0
         self.cam.elevation = -45.0
 
-    def controller(self):
+        mj.set_mjcb_control(self.controller)
+
+    def controller(self, model, data):
         """
         This controller adds drag force to the ball
         The drag force has the form of
@@ -39,9 +41,6 @@ class Projectile(MuJoCoBase):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
-                # Apply drag force
-                self.controller()
-
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 

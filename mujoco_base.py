@@ -120,8 +120,8 @@ class MuJoCoBase():
 
         mj.glfw.glfw.terminate()
 
-    def reset(self):
+    def reset(self, **kwargs):
         raise NotImplementedError
 
-    def controller(self):
+    def controller(self, **kwargs):
         raise NotImplementedError
