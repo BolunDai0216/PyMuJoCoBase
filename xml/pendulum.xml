@@ -1,6 +1,6 @@
 <mujoco>
-	<option>
-		<flag sensornoise="enable" />
+	<option gravity="0 0 -9.81">
+		<flag sensornoise="enable"/>
 	</option>
 
 	<worldbody>

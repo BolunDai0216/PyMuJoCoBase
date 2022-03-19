@@ -1,5 +1,3 @@
-from pdb import set_trace
-
 import mujoco as mj
 import numpy as np
 
@@ -20,24 +18,30 @@ class ContolPendulum(MuJoCoBase):
         self.cam.elevation = -5
         self.cam.lookat = np.array([0.012768, -0.000000, 1.254336])
 
-    def controller(self):
+    def controller(self, actuator_type="torque"):
         """
         This function implements a PD controller
+
+        Since there are no gravity compensation,
+        it will not be very accurate at tracking
+        the set point. It will be accurate is
+        gravity is turned off.
         """
-        flag = 0
-        self.model.actuator_gainprm[0, 0] = flag
-        self.data.ctrl[0] = -2 * \
-            (self.data.qpos[0] - 0.0) - 10 * (self.data.qvel[0] - 0.0)
+        if actuator_type == "torque":
+            self.model.actuator_gainprm[0, 0] = 1
+            self.data.ctrl[0] = -10 * \
+                (self.data.sensordata[0] - 0.0) - \
+                1 * (self.data.sensordata[1] - 0.0)
+        elif actuator_type == "servo":
+            kp = 10.0
+            self.model.actuator_gainprm[1, 0] = kp
+            self.model.actuator_biasprm[1, 1] = -kp
+            self.data.ctrl[1] = -0.5
 
-        kp = 10.0
-        self.model.actuator_gainprm[1, 0] = kp
-        self.model.actuator_biasprm[1, 1] = -kp
-        self.data.ctrl[1] = -0.5
-
-        kv = 1.0
-        self.model.actuator_gainprm[2, 0] = kv
-        self.model.actuator_biasprm[2, 2] = -kv
-        self.data.ctrl[2] = 0.0
+            kv = 1.0
+            self.model.actuator_gainprm[2, 0] = kv
+            self.model.actuator_biasprm[2, 2] = -kv
+            self.data.ctrl[2] = 0.0
 
     def simulate(self):
         while not mj.glfw.glfw.window_should_close(self.window):
@@ -45,10 +49,12 @@ class ContolPendulum(MuJoCoBase):
 
             while (self.data.time - simstart < 1.0/60.0):
                 # Apply PD controller
-                self.controller()
+                self.controller(actuator_type="servo")
 
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
+
+            print(self.data.qpos[0])
 
             # get framebuffer viewport
             viewport_width, viewport_height = mj.glfw.glfw.get_framebuffer_size(
