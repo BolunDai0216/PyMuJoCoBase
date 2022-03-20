@@ -15,11 +15,11 @@ The main purpose of the this repo is providing the starter code required to run 
 
 ## TODO
 
-I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) into Python. Current progress: (2/12).
+I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) into Python. Current progress: [3/12].
 
 - [x] Projectile with drag
 - [x] Control a simple pendulum
-- [ ] Control a double pendulum
+- [x] Control a double pendulum
 - [ ] Leg swing
 - [ ] Manipulator drawing
 - [ ] Control an underactuated pendulum
