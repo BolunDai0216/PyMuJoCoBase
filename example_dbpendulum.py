@@ -8,7 +8,6 @@ from mujoco_base import MuJoCoBase
 class DoublePendulum(MuJoCoBase):
     def __init__(self, xml_path):
         super().__init__(xml_path)
-        self.actuator_type = "torque"
         self.simend = 5.0
 
     def reset(self):
