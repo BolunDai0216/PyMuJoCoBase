@@ -69,8 +69,8 @@ class LegSwing(MuJoCoBase):
 
         # Get reference joint position & velocity
         if self.fsm_state == FSM_HOLD:
-            q_ref = np.array([[-1.0], [0.0]])
-            dq_ref = np.array([[0.0], [0.0]])
+            q_ref = self.q_init
+            dq_ref = np.zeros((2, 1))
         elif self.fsm_state == FSM_SWING1:
             q_ref = self.a_swing1[0] + self.a_swing1[1]*time + \
                 self.a_swing1[2]*(time**2) + self.a_swing1[3]*(time**3)
@@ -82,8 +82,8 @@ class LegSwing(MuJoCoBase):
             dq_ref = self.a_swing2[1] + 2 * self.a_swing2[2] * \
                 time + 3 * self.a_swing2[3]*(time**2)
         elif self.fsm_state == FSM_STOP:
-            q_ref = np.array([[1.0], [0.0]])
-            dq_ref = np.array([[0.0], [0.0]])
+            q_ref = self.q_end
+            dq_ref = np.zeros((2, 1))
 
         # Define PD gains
         kp = 500
