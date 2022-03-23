@@ -1,5 +1,3 @@
-from pdb import set_trace
-
 import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
