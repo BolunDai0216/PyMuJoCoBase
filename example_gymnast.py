@@ -30,8 +30,8 @@ class Gymnast(MuJoCoBase):
 
     def controller(self, model, data):
         """
-        This function implements a P controller for tracking
-        the reference motion.
+        This function implements a controller that 
+        mimics the forces of a fixed joint before release
         """
         # Get constraint Jacobian
         J0 = data.efc_J[:3, :]
