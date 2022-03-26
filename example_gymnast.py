@@ -34,14 +34,13 @@ class Gymnast(MuJoCoBase):
         mimics the forces of a fixed joint before release
         """
         # Get constraint Jacobian
-        J0 = data.efc_J[:3, :]
-        J1 = J0[:, :3]
+        J = data.efc_J[:3, :3]
 
         # Get constraint force
         F0 = data.efc_force[:3][:, np.newaxis]
 
         # Get constrained joint torque
-        JT_F = J1.T @ F0
+        JT_F = J.T @ F0
 
         # Release condition check
         if self.fsm == FSM_SWING and data.qpos[5] > 1.0:
