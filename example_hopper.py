@@ -8,7 +8,7 @@ from mujoco_base import MuJoCoBase
 FSM_AIR1 = 0
 FSM_STANCE1 = 1
 FSM_STANCE2 = 2
-FSM_AIR2 = 0
+FSM_AIR2 = 3
 
 class Hopper(MuJoCoBase):
     def __init__(self, xml_path):
