@@ -11,7 +11,7 @@ FSM_FREE = 1
 class Gymnast(MuJoCoBase):
     def __init__(self, xml_path):
         super().__init__(xml_path)
-        self.simend = 20.0
+        self.simend = 5.0
         self.fsm = None
 
     def reset(self):
@@ -85,7 +85,6 @@ class Gymnast(MuJoCoBase):
 
             # process pending GUI events, call GLFW callbacks
             glfw.poll_events()
-            # set_trace()
 
         glfw.terminate()
 
