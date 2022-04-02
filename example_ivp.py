@@ -1,11 +1,13 @@
+from pdb import set_trace
+
 import mujoco as mj
+import nlopt
 import numpy as np
 from mujoco.glfw import glfw
 from numpy.linalg import inv
+from scipy import optimize
 
 from mujoco_base import MuJoCoBase
-from pdb import set_trace
-from scipy import optimize
 
 
 class InitialValueProblem(MuJoCoBase):
@@ -25,23 +27,26 @@ class InitialValueProblem(MuJoCoBase):
         theta = np.pi / 4
         time_of_flight = 2.0
 
-        set_trace()
-        sol = optimize.root(self.opt_func, x0=[v, theta, time_of_flight], method="broyden1")
+        sol = self.optimize_ic(np.array([v, theta, time_of_flight]))
 
-        pos = self.simulator(v, theta, time_of_flight)
-        print(f"Position at the end: ({pos[0]}, {pos[1]})")
+        # NLOPT solution:
+        #     v_sol = 9.398687489285555
+        # theta_sol = 1.2184054599970882
+        v_sol, theta_sol = sol[0], sol[1]
 
         self.data.qvel[0] = v * np.cos(theta)
         self.data.qvel[2] = v * np.sin(theta)
-    
-    def simulator(self, v, theta, time_of_flight):
+
+    def simulator(self, x):
+        v, theta, time_of_flight = x[0], x[1], x[2]
+
         self.data.qvel[0] = v * np.cos(theta)
         self.data.qvel[2] = v * np.sin(theta)
 
         while (self.data.time < time_of_flight):
             # Step simulation environment
             mj.mj_step(self.model, self.data)
-        
+
         # Get position
         pos = np.array([self.data.qpos[0], self.data.qpos[2]])
 
@@ -49,13 +54,41 @@ class InitialValueProblem(MuJoCoBase):
         mj.mj_resetData(self.model, self.data)
 
         return pos
-    
-    def opt_func(self, v, theta, time_of_flight):
-        pos = self.simulator(v, theta, time_of_flight)
-        # err = (pos[0] - 5.0)**2 + (pos[1] - 2.1)**2
-        err = pos - np.array([5.0, 2.1])
 
-        return err
+    def cost_func(self, x, grad):
+        cost = 0.0
+
+        return cost
+
+    def equality_constraints(self, result, x, grad):
+        """
+        For details of the API please refer to:
+        https://nlopt.readthedocs.io/en/latest/NLopt_Python_Reference/#:~:text=remove_inequality_constraints()%0Aopt.remove_equality_constraints()-,Vector%2Dvalued%20constraints,-Just%20as%20for 
+        Note: Please open the link in Chrome
+        """
+        pos = self.simulator(x)
+        result[0] = pos[0] - 5.0
+        result[1] = pos[1] - 2.1
+
+    def optimize_ic(self, x):
+        # Define optimization problem
+        opt = nlopt.opt(nlopt.LN_COBYLA, 3)
+
+        # Define lower and upper bounds
+        opt.set_lower_bounds([0.1, 0.1, 0.1])
+        opt.set_upper_bounds([10000.0, np.pi/2-0.1, 10000.0])
+
+        # Set objective funtion
+        opt.set_min_objective(self.cost_func)
+
+        # Define equality constraints
+        tol = [1e-4, 1e-4]
+        opt.add_equality_mconstraint(self.equality_constraints, tol)
+        opt.set_xtol_rel(1e-4)
+
+        xopt = opt.optimize(x)
+
+        return xopt
 
     def simulate(self):
         while not glfw.window_should_close(self.window):
@@ -86,15 +119,6 @@ class InitialValueProblem(MuJoCoBase):
             glfw.poll_events()
 
         glfw.terminate()
-    
-    def set_position_servo(self, actuator_no, kp):
-        self.model.actuator_gainprm[actuator_no, 0] = kp
-        self.model.actuator_biasprm[actuator_no, 1] = -kp
-    
-    def set_velocity_servo(self, actuator_no, kv):
-        self.model.actuator_gainprm[actuator_no, 0] = kv
-        self.model.actuator_biasprm[actuator_no, 2] = -kv
-
 
 
 def main():
