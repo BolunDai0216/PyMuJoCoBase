@@ -1,18 +1,11 @@
-from pdb import set_trace
-
 import matplotlib as mpl
 import matplotlib.pyplot as plt
 import mujoco as mj
+import nlopt
 import numpy as np
 from mujoco.glfw import glfw
 
 from mujoco_base import MuJoCoBase
-
-try:
-    import nlopt
-except ImportError:
-    print("nlopt not imported, switching to pre-computed solution")
-    NLOPT_IMPORTED = False
 
 mpl.rcParams['text.usetex'] = True
 mpl.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
