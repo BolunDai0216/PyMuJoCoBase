@@ -1,3 +1,7 @@
+from pdb import set_trace
+
+import matplotlib as mpl
+import matplotlib.pyplot as plt
 import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
@@ -9,6 +13,10 @@ try:
 except ImportError:
     print("nlopt not imported, switching to pre-computed solution")
     NLOPT_IMPORTED = False
+
+mpl.rcParams['text.usetex'] = True
+mpl.rcParams['text.latex.preamble'] = r'\usepackage{amsmath}'
+plt.rcParams["font.size"] = 16
 
 
 class ManipulatorIK(MuJoCoBase):
@@ -24,14 +32,44 @@ class ManipulatorIK(MuJoCoBase):
         self.cam.distance = 5.0
         self.cam.lookat = np.array([0.0, 0.0, 1.5])
 
-        x = np.array([-0.5, 1.0])
-        self.x_target = np.array([1.75, 1.5])
-        self.inverse_kinematics(x, self.x_target)
-        # self.forward_kinematics([-0.5, 1.0])
+        # Get center of Lemniscate
+        end_eff_pos = self.forward_kinematics([-0.5, 1.0])
+        self.center_x = end_eff_pos[0] - 0.25
+        self.center_z = end_eff_pos[1]
+        self.omega = 0.4
+        self.a = 0.25
+        self.simend = 0.25 + 2 * np.pi / self.omega
 
-    def forward_kinematics(self, x):
-        self.data_sim.qpos[0] = x[0]
-        self.data_sim.qpos[1] = x[1]
+        # Get initial joint angles
+        q_guess = np.array([-0.5, 1.0])
+        self.x_target = self.get_lemniscate_ref(0.0)
+        self.q_pos = self.inverse_kinematics(q_guess)
+
+        self.data.qpos[0] = self.q_pos[0]
+        self.data.qpos[1] = self.q_pos[1]
+
+        # Create list to store data
+        self.end_eff_pos = []
+
+        # mj.set_mjcb_control(self.controller)
+
+    def controller(self, model, data):
+        # Get reference end-effector position
+        self.x_target = self.get_lemniscate_ref(data.time)
+
+        # Use current joint angles as the initial guess
+        qpos = np.array([data.qpos[0], data.qpos[1]])
+
+        # Solve for the joint angles
+        sol = self.inverse_kinematics(qpos)
+
+        # Apply control
+        self.data.ctrl[0] = sol[0]
+        self.data.ctrl[2] = sol[1]
+
+    def forward_kinematics(self, q):
+        self.data_sim.qpos[0] = q[0]
+        self.data_sim.qpos[1] = q[1]
         self.data_sim.ctrl[0] = self.data_sim.qpos[0]
         self.data_sim.ctrl[2] = self.data_sim.qpos[1]
 
@@ -54,7 +92,7 @@ class ManipulatorIK(MuJoCoBase):
         result[0] = end_eff_pos[0] - self.x_target[0]
         result[1] = end_eff_pos[1] - self.x_target[1]
 
-    def inverse_kinematics(self, x, x_target):
+    def inverse_kinematics(self, x):
         # Define optimization problem
         opt = nlopt.opt(nlopt.LN_COBYLA, 2)
 
@@ -66,7 +104,7 @@ class ManipulatorIK(MuJoCoBase):
         opt.set_min_objective(self.cost_func)
 
         # Define equality constraints
-        tol = [1e-8, 1e-8]
+        tol = [1e-4, 1e-4]
         opt.add_equality_mconstraint(self.equality_constraints, tol)
 
         # Set relative tolerance on optimization parameters
@@ -77,13 +115,31 @@ class ManipulatorIK(MuJoCoBase):
 
         return sol
 
+    def get_lemniscate_ref(self, t):
+        wt = self.omega * t
+        denominator = 1 + np.sin(wt) * np.sin(wt)
+
+        x = self.center_x + (self.a * np.cos(wt)) / denominator
+        z = self.center_z + (self.a * np.sin(wt) * np.cos(wt)) / denominator
+
+        ref_pos = np.array([x, z])
+
+        return ref_pos
+
     def simulate(self):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
             while (self.data.time - simstart < 1.0/60.0):
                 # Step simulation environment
+                self.controller(self.model, self.data)
                 mj.mj_step(self.model, self.data)
+
+            end_eff_pos = np.array([
+                self.data.sensordata[0],
+                self.data.sensordata[2]
+            ])
+            self.end_eff_pos.append(end_eff_pos[:, np.newaxis])
 
             if self.data.time >= self.simend:
                 break
@@ -106,6 +162,45 @@ class ManipulatorIK(MuJoCoBase):
             glfw.poll_events()
 
         glfw.terminate()
+
+    def visualize(self):
+        # Measured motion trajectory
+        end_eff_pos_arr = np.concatenate(self.end_eff_pos, axis=1)
+
+        # Get reference trajectory
+        wt = self.omega * np.linspace(0.0, self.simend, 500)
+        denominator = 1 + np.sin(wt) * np.sin(wt)
+        leminiscate_x = self.center_x + (self.a * np.cos(wt)) / denominator
+        leminiscate_z = self.center_z + \
+            (self.a * np.sin(wt) * np.cos(wt)) / denominator
+
+        # Visualization
+        fig, ax = plt.subplots(1, 1, figsize=(8, 5))
+
+        ax.plot(
+            end_eff_pos_arr[0, :],
+            end_eff_pos_arr[1, :],
+            color="cornflowerblue",
+            linewidth=4,
+            zorder=-2,
+            label=r"$\textbf{Inverse Kinematics}$"
+        )
+        ax.plot(
+            leminiscate_x,
+            leminiscate_z,
+            color="darkorange",
+            linewidth=1,
+            zorder=-1,
+            label=r"$\textbf{Reference}$"
+        )
+
+        ax.grid()
+        ax.set_aspect("equal")
+        ax.legend(frameon=False, ncol=2, loc="lower center",
+                  bbox_to_anchor=(0.5, -0.4))
+
+        plt.savefig("imgs/manipulator_ik.png", dpi=200,
+                    transparent=False, bbox_inches="tight")
 
 
 def main():
