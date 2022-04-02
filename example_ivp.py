@@ -1,11 +1,15 @@
 import mujoco as mj
-import nlopt
 import numpy as np
 from mujoco.glfw import glfw
 from numpy.linalg import inv
 from scipy import optimize
 
 from mujoco_base import MuJoCoBase
+
+try:
+    import nlopt
+except:
+    NLOPT_IMPORTED = False
 
 
 class InitialValueProblem(MuJoCoBase):
@@ -24,13 +28,22 @@ class InitialValueProblem(MuJoCoBase):
         v = 10.0
         theta = np.pi / 4
         time_of_flight = 2.0
+        
+        """
+        NLOPT solution:
+        v_sol = 9.398687489285555
+        theta_sol = 1.2184054599970882
+        time_of_flight_sol = 1.5654456340479144
+        """
+        if NLOPT_IMPORTED:
+            sol = self.optimize_ic(np.array([v, theta, time_of_flight]))
+        else:
+            sol = np.array([
+                9.398687489285555,
+                1.2184054599970882,
+                1.5654456340479144
+            ])
 
-        sol = self.optimize_ic(np.array([v, theta, time_of_flight]))
-
-        # NLOPT solution:
-        #              v_sol = 9.398687489285555
-        #          theta_sol = 1.2184054599970882
-        # time_of_flight_sol = 1.5654456340479144
         v_sol, theta_sol = sol[0], sol[1]
         self.simend = sol[2] + 2
 
