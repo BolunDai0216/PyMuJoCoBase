@@ -93,7 +93,7 @@ class InitialValueProblem(MuJoCoBase):
                    x(T) = x^*
                    z(T) = z^*
 
-        with X = [x, y, z].
+        with X = [x, y, z]. 
         """
         # Define optimization problem
         opt = nlopt.opt(nlopt.LN_COBYLA, 3)
