@@ -15,7 +15,7 @@ The main purpose of this repo is providing the starter code required to run a Mu
 
 ## TODO
 
-I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) into Python. Current progress: [8/11].
+I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) into Python. Current progress: [9/11].
 
 - [x] Projectile with drag
 - [x] Control a simple pendulum
@@ -25,7 +25,7 @@ I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.g
 - [x] Control an underactuated pendulum
 - [x] Gymnast swing/release on a bar
 - [x] 2D Hopper
-- [ ] Initial Value Problem
+- [x] Initial Value Problem
 - [ ] Inverse Kinematics
 - [ ] 2D Biped
 

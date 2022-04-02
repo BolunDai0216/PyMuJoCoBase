@@ -1,5 +1,3 @@
-from pdb import set_trace
-
 import mujoco as mj
 import nlopt
 import numpy as np
@@ -30,12 +28,14 @@ class InitialValueProblem(MuJoCoBase):
         sol = self.optimize_ic(np.array([v, theta, time_of_flight]))
 
         # NLOPT solution:
-        #     v_sol = 9.398687489285555
-        # theta_sol = 1.2184054599970882
+        #              v_sol = 9.398687489285555
+        #          theta_sol = 1.2184054599970882
+        # time_of_flight_sol = 1.5654456340479144
         v_sol, theta_sol = sol[0], sol[1]
+        self.simend = sol[2] + 2
 
-        self.data.qvel[0] = v * np.cos(theta)
-        self.data.qvel[2] = v * np.sin(theta)
+        self.data.qvel[0] = v_sol * np.cos(theta_sol)
+        self.data.qvel[2] = v_sol * np.sin(theta_sol)
 
     def simulator(self, x):
         v, theta, time_of_flight = x[0], x[1], x[2]
