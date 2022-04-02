@@ -1,14 +1,13 @@
 import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
-from numpy.linalg import inv
-from scipy import optimize
 
 from mujoco_base import MuJoCoBase
 
 try:
     import nlopt
-except:
+except ImportError:
+    print("nlopt not imported, switching to pre-computed solution")
     NLOPT_IMPORTED = False
 
 
@@ -28,7 +27,7 @@ class InitialValueProblem(MuJoCoBase):
         v = 10.0
         theta = np.pi / 4
         time_of_flight = 2.0
-        
+
         """
         NLOPT solution:
         v_sol = 9.398687489285555
@@ -84,6 +83,18 @@ class InitialValueProblem(MuJoCoBase):
         result[1] = pos[1] - 2.1
 
     def optimize_ic(self, x):
+        """
+        Optimization problem is
+
+             min_X      0
+        subject to 0.1 ≤ v ≤ ∞
+                   0.1 ≤ θ ≤ π/2
+                   0.1 ≤ T ≤ ∞
+                   x(T) = x^*
+                   z(T) = z^*
+
+        with X = [x, y, z].
+        """
         # Define optimization problem
         opt = nlopt.opt(nlopt.LN_COBYLA, 3)
 
@@ -97,11 +108,14 @@ class InitialValueProblem(MuJoCoBase):
         # Define equality constraints
         tol = [1e-4, 1e-4]
         opt.add_equality_mconstraint(self.equality_constraints, tol)
+
+        # Set relative tolerance on optimization parameters
         opt.set_xtol_rel(1e-4)
 
-        xopt = opt.optimize(x)
+        # Solve problem
+        sol = opt.optimize(x)
 
-        return xopt
+        return sol
 
     def simulate(self):
         while not glfw.window_should_close(self.window):
