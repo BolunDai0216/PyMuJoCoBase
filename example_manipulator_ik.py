@@ -208,6 +208,7 @@ def main():
     sim = ManipulatorIK(xml_path)
     sim.reset()
     sim.simulate()
+    sim.visualize()
 
 
 if __name__ == "__main__":
