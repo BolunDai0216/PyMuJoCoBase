@@ -31,7 +31,7 @@ I plan to translate all of the examples in the [MuJoCo Bootcamp](https://pab47.g
 
 ## NLOPT
 
-I could not get the [Python bindings for NLOPT](https://github.com/DanielBok/nlopt-python) to work on MacOS, its only tested on Ubuntu 20.04 LTS.
+I could not get the [Python bindings for NLOPT](https://github.com/DanielBok/nlopt-python) to work on an M1 Mac, its only tested on Ubuntu 20.04 LTS.
 
 ## Contact
 
