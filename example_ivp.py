@@ -4,6 +4,8 @@ from mujoco.glfw import glfw
 
 from mujoco_base import MuJoCoBase
 
+NLOPT_IMPORTED = True
+
 try:
     import nlopt
 except ImportError:
@@ -37,11 +39,7 @@ class InitialValueProblem(MuJoCoBase):
         if NLOPT_IMPORTED:
             sol = self.optimize_ic(np.array([v, theta, time_of_flight]))
         else:
-            sol = np.array([
-                9.398687489285555,
-                1.2184054599970882,
-                1.5654456340479144
-            ])
+            sol = np.array([9.398687489285555, 1.2184054599970882, 1.5654456340479144])
 
         v_sol, theta_sol = sol[0], sol[1]
         self.simend = sol[2] + 2
@@ -55,7 +53,7 @@ class InitialValueProblem(MuJoCoBase):
         self.data.qvel[0] = v * np.cos(theta)
         self.data.qvel[2] = v * np.sin(theta)
 
-        while (self.data.time < time_of_flight):
+        while self.data.time < time_of_flight:
             # Step simulation environment
             mj.mj_step(self.model, self.data)
 
@@ -75,7 +73,7 @@ class InitialValueProblem(MuJoCoBase):
     def equality_constraints(self, result, x, grad):
         """
         For details of the API please refer to:
-        https://nlopt.readthedocs.io/en/latest/NLopt_Python_Reference/#:~:text=remove_inequality_constraints()%0Aopt.remove_equality_constraints()-,Vector%2Dvalued%20constraints,-Just%20as%20for 
+        https://nlopt.readthedocs.io/en/latest/NLopt_Python_Reference/#:~:text=remove_inequality_constraints()%0Aopt.remove_equality_constraints()-,Vector%2Dvalued%20constraints,-Just%20as%20for
         Note: Please open the link in Chrome
         """
         pos = self.simulator(x)
@@ -100,7 +98,7 @@ class InitialValueProblem(MuJoCoBase):
 
         # Define lower and upper bounds
         opt.set_lower_bounds([0.1, 0.1, 0.1])
-        opt.set_upper_bounds([10000.0, np.pi/2-0.1, 10000.0])
+        opt.set_upper_bounds([10000.0, np.pi / 2 - 0.1, 10000.0])
 
         # Set objective funtion
         opt.set_min_objective(self.cost_func)
@@ -121,7 +119,7 @@ class InitialValueProblem(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
@@ -129,14 +127,20 @@ class InitialValueProblem(MuJoCoBase):
                 break
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Update scene and render
             self.cam.lookat[0] = self.data.qpos[0]
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
