@@ -2,7 +2,7 @@ import mujoco as mj
 from mujoco.glfw import glfw
 
 
-class MuJoCoBase():
+class MuJoCoBase:
     def __init__(self, xml_path):
         # For callback functions
         self.button_left = False
@@ -13,9 +13,9 @@ class MuJoCoBase():
 
         # MuJoCo data structures
         self.model = mj.MjModel.from_xml_path(xml_path)  # MuJoCo model
-        self.data = mj.MjData(self.model)                # MuJoCo data
-        self.cam = mj.MjvCamera()                        # Abstract camera
-        self.opt = mj.MjvOption()                        # visualization options
+        self.data = mj.MjData(self.model)  # MuJoCo data
+        self.cam = mj.MjvCamera()  # Abstract camera
+        self.opt = mj.MjvOption()  # visualization options
 
         # Init GLFW, create window, make OpenGL context current, request v-sync
         glfw.init()
@@ -27,8 +27,7 @@ class MuJoCoBase():
         mj.mjv_defaultCamera(self.cam)
         mj.mjv_defaultOption(self.opt)
         self.scene = mj.MjvScene(self.model, maxgeom=10000)
-        self.context = mj.MjrContext(
-            self.model, mj.mjtFontScale.mjFONTSCALE_150.value)
+        self.context = mj.MjrContext(self.model, mj.mjtFontScale.mjFONTSCALE_150.value)
 
         # install GLFW mouse and keyboard callbacks
         glfw.set_key_callback(self.window, self.keyboard)
@@ -43,12 +42,15 @@ class MuJoCoBase():
 
     def mouse_button(self, window, button, act, mods):
         # update button state
-        self.button_left = (glfw.get_mouse_button(
-            window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS)
-        self.button_middle = (glfw.get_mouse_button(
-            window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS)
-        self.button_right = (glfw.get_mouse_button(
-            window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS)
+        self.button_left = (
+            glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_LEFT) == glfw.PRESS
+        )
+        self.button_middle = (
+            glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_MIDDLE) == glfw.PRESS
+        )
+        self.button_right = (
+            glfw.get_mouse_button(window, glfw.MOUSE_BUTTON_RIGHT) == glfw.PRESS
+        )
 
         # update mouse position
         glfw.get_cursor_pos(window)
@@ -61,18 +63,20 @@ class MuJoCoBase():
         self.lasty = ypos
 
         # no buttons down: nothing to do
-        if (not self.button_left) and (not self.button_middle) and (not self.button_right):
+        if (
+            (not self.button_left)
+            and (not self.button_middle)
+            and (not self.button_right)
+        ):
             return
 
         # get current window size
         width, height = glfw.get_window_size(window)
 
         # get shift key state
-        PRESS_LEFT_SHIFT = glfw.get_key(
-            window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS
-        PRESS_RIGHT_SHIFT = glfw.get_key(
-            window, glfw.KEY_RIGHT_SHIFT) == glfw.PRESS
-        mod_shift = (PRESS_LEFT_SHIFT or PRESS_RIGHT_SHIFT)
+        PRESS_LEFT_SHIFT = glfw.get_key(window, glfw.KEY_LEFT_SHIFT) == glfw.PRESS
+        PRESS_RIGHT_SHIFT = glfw.get_key(window, glfw.KEY_RIGHT_SHIFT) == glfw.PRESS
+        mod_shift = PRESS_LEFT_SHIFT or PRESS_RIGHT_SHIFT
 
         # determine action based on mouse button
         if self.button_right:
@@ -88,29 +92,37 @@ class MuJoCoBase():
         else:
             action = mj.mjtMouse.mjMOUSE_ZOOM
 
-        mj.mjv_moveCamera(self.model, action, dx/height,
-                          dy/height, self.scene, self.cam)
+        mj.mjv_moveCamera(
+            self.model, action, dx / height, dy / height, self.scene, self.cam
+        )
 
     def scroll(self, window, xoffset, yoffset):
         action = mj.mjtMouse.mjMOUSE_ZOOM
-        mj.mjv_moveCamera(self.model, action, 0.0, -0.05 *
-                          yoffset, self.scene, self.cam)
+        mj.mjv_moveCamera(
+            self.model, action, 0.0, -0.05 * yoffset, self.scene, self.cam
+        )
 
     def simulate(self):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 mj.mj_step(self.model, self.data)
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Update scene and render
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)

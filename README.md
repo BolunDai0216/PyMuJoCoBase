@@ -13,6 +13,24 @@ The main purpose of this repo is providing the starter code required to run a Mu
                 # mujoco_base.MuJoCoBase and add your own twist
 ```
 
+## How to apply control
+
+The sole purpose of the `controller()` function is to change the values of the `data.ctrl` which corresponds to the actuator control values. There are two ways to achieve this, one is to set `controller()` as the [control callback function](https://mujoco.readthedocs.io/en/latest/APIreference.html?highlight=%20control#mjcb-control)
+
+```python
+mj.set_mjcb_control(self.controller)
+```
+
+in `reset()`, an example usage is shown in `example_manipulator_drawing.py`. This tells MuJoCo to run the controller automatically. Another way to is to run `controller()` directly in `simulate()`, i.e., add
+
+```python
+while (self.data.time - simstart < 1.0/60.0):
+    self.controller(self.model, self.data)
+    mj.mj_step(self.model, self.data)
+```
+
+to `simulate()`, please refer to `example_manipulator_ik.py` for this usage. This is a more manual approach, which applies the new control action at each time step.
+
 ## MuJoCo Bootcamp Examples
 
 All of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) are translated into Python. The examples include:
