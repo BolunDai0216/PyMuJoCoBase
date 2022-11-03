@@ -2,7 +2,8 @@ import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 NLOPT_IMPORTED = True
 
@@ -153,7 +154,8 @@ class InitialValueProblem(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/projectile_opt.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/projectile_opt.xml"
     sim = InitialValueProblem(xml_path)
     sim.reset()
     sim.simulate()

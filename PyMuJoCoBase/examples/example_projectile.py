@@ -2,7 +2,8 @@ import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 
 class Projectile(MuJoCoBase):
@@ -41,13 +42,12 @@ class Projectile(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Make camera track ball
@@ -57,8 +57,15 @@ class Projectile(MuJoCoBase):
             self.opt.frame = mj.mjtFrame.mjFRAME_WORLD
 
             # Update scene and render
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
@@ -71,7 +78,8 @@ class Projectile(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/ball.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/ball.xml"
     sim = Projectile(xml_path)
     sim.reset()
     sim.simulate()

@@ -4,7 +4,8 @@ from mujoco.glfw import glfw
 from numpy.linalg import inv
 from scipy.linalg import solve_continuous_are
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 
 class Acrobot(MuJoCoBase):
@@ -32,12 +33,14 @@ class Acrobot(MuJoCoBase):
         """
         This function implements a LQR controller for balancing.
         """
-        state = np.array([
-            [data.qpos[0]],
-            [data.qvel[0]],
-            [data.qpos[1]],
-            [data.qvel[1]],
-        ])
+        state = np.array(
+            [
+                [data.qpos[0]],
+                [data.qvel[0]],
+                [data.qpos[1]],
+                [data.qvel[1]],
+            ]
+        )
         data.ctrl[0] = (self.K @ state)[0, 0]
 
         # Apply noise to shoulder
@@ -48,7 +51,7 @@ class Acrobot(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
@@ -56,13 +59,19 @@ class Acrobot(MuJoCoBase):
                 break
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Update scene and render
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
@@ -99,10 +108,9 @@ class Acrobot(MuJoCoBase):
         mj.mj_fullM(self.model, M, self.data.qM)
 
         # Calculate f = ctrl - qfrc_bias
-        f = np.array([
-            [0 - self.data.qfrc_bias[0]],
-            [self.data.ctrl[0] - self.data.qfrc_bias[1]]
-        ])
+        f = np.array(
+            [[0 - self.data.qfrc_bias[0]], [self.data.ctrl[0] - self.data.qfrc_bias[1]]]
+        )
 
         # Calculate qacc
         ddq = inv(M) @ f
@@ -128,7 +136,8 @@ class Acrobot(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/acrobot.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/acrobot.xml"
     sim = Acrobot(xml_path)
     sim.reset()
     sim.simulate()

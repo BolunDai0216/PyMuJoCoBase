@@ -4,7 +4,8 @@ from mujoco.glfw import glfw
 from numpy.linalg import inv
 from scipy.spatial.transform import Rotation as R
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 FSM_LEG1_SWING = 0
 FSM_LEG2_SWING = 1
@@ -44,7 +45,7 @@ class Biped(MuJoCoBase):
 
     def controller(self, model, data):
         """
-        This function implements a controller that 
+        This function implements a controller that
         mimics the forces of a fixed joint before release
         """
         # State Estimation
@@ -64,12 +65,20 @@ class Biped(MuJoCoBase):
         if self.fsm_hip == FSM_LEG1_SWING and pos_foot1[2] < 0.05 and abs_leg2 < 0.0:
             self.fsm_hip = FSM_LEG2_SWING
 
-        if self.fsm_knee1 == FSM_KNEE1_STANCE and pos_foot2[2] < 0.05 and abs_leg1 < 0.0:
+        if (
+            self.fsm_knee1 == FSM_KNEE1_STANCE
+            and pos_foot2[2] < 0.05
+            and abs_leg1 < 0.0
+        ):
             self.fsm_knee1 = FSM_KNEE1_RETRACT
         if self.fsm_knee1 == FSM_KNEE1_RETRACT and abs_leg1 > 0.1:
             self.fsm_knee1 = FSM_KNEE1_STANCE
 
-        if self.fsm_knee2 == FSM_KNEE2_STANCE and pos_foot1[2] < 0.05 and abs_leg2 < 0.0:
+        if (
+            self.fsm_knee2 == FSM_KNEE2_STANCE
+            and pos_foot1[2] < 0.05
+            and abs_leg2 < 0.0
+        ):
             self.fsm_knee2 = FSM_KNEE2_RETRACT
         if self.fsm_knee2 == FSM_KNEE2_RETRACT and abs_leg2 > 0.1:
             self.fsm_knee2 = FSM_KNEE2_STANCE
@@ -94,7 +103,7 @@ class Biped(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
@@ -105,8 +114,7 @@ class Biped(MuJoCoBase):
                 break
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Show joint frames
@@ -114,8 +122,15 @@ class Biped(MuJoCoBase):
 
             # Update scene and render
             self.cam.lookat[0] = self.data.qpos[0]
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
@@ -134,13 +149,14 @@ class Biped(MuJoCoBase):
 
         # roll-pitch-yaw is the same as rotating w.r.t
         # the x, y, z axis in the world frame
-        euler = r.as_euler('xyz', degrees=False)
+        euler = r.as_euler("xyz", degrees=False)
 
         return euler
 
 
 def main():
-    xml_path = "./xml/biped.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/biped.xml"
     sim = Biped(xml_path)
     sim.reset()
     sim.simulate()

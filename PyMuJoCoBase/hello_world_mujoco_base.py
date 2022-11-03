@@ -1,4 +1,4 @@
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
 
 
 def main():

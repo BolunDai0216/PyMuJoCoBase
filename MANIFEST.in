@@ -1,0 +1,4 @@
+include PyMuJoCoBase/xml/*.xml
+include PyMuJoCoBase/xml/a1/xml/*.xml
+include PyMuJoCoBase/xml/a1/meshes/*.stl
+include PyMuJoCoBase/xml/a1/urdf/*.urdf

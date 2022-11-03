@@ -3,10 +3,12 @@ import numpy as np
 from mujoco.glfw import glfw
 from numpy.linalg import inv
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 FSM_SWING = 0
 FSM_FREE = 1
+
 
 class Gymnast(MuJoCoBase):
     def __init__(self, xml_path):
@@ -16,8 +18,8 @@ class Gymnast(MuJoCoBase):
 
     def reset(self):
         # Set initial configuration
-        self.data.qpos[2] = -np.pi/2
-        self.data.qpos[5] = -np.pi/2
+        self.data.qpos[2] = -np.pi / 2
+        self.data.qpos[5] = -np.pi / 2
 
         # Set camera configuration
         self.cam.azimuth = 89.608063
@@ -30,7 +32,7 @@ class Gymnast(MuJoCoBase):
 
     def controller(self, model, data):
         """
-        This function implements a controller that 
+        This function implements a controller that
         mimics the forces of a fixed joint before release
         """
         # Get constraint Jacobian
@@ -45,7 +47,7 @@ class Gymnast(MuJoCoBase):
         # Release condition check
         if self.fsm == FSM_SWING and data.qpos[5] > 1.0:
             self.fsm = FSM_FREE
-        
+
         if self.fsm == FSM_SWING:
             data.qfrc_applied[2] = -1 * (data.qvel[2] - 5.0)
             data.qfrc_applied[3] = JT_F[0, 0]
@@ -60,7 +62,7 @@ class Gymnast(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
@@ -68,16 +70,22 @@ class Gymnast(MuJoCoBase):
                 break
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Show joint frames
             self.opt.flags[mj.mjtVisFlag.mjVIS_JOINT] = 1
 
             # Update scene and render
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
@@ -90,7 +98,8 @@ class Gymnast(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/gymnast.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/gymnast.xml"
     sim = Gymnast(xml_path)
     sim.reset()
     sim.simulate()

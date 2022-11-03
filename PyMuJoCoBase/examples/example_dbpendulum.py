@@ -2,7 +2,8 @@ import mujoco as mj
 import numpy as np
 from mujoco.glfw import glfw
 
-from mujoco_base import MuJoCoBase
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 
 class DoublePendulum(MuJoCoBase):
@@ -46,8 +47,9 @@ class DoublePendulum(MuJoCoBase):
         f = data.qfrc_bias[:, np.newaxis]
 
         # τ = M * ddqref
-        ddqref = Kp @ (qref - data.qpos[:2][:, np.newaxis]) + \
-            Kd @ (0 - data.qvel[:2][:, np.newaxis])
+        ddqref = Kp @ (qref - data.qpos[:2][:, np.newaxis]) + Kd @ (
+            0 - data.qvel[:2][:, np.newaxis]
+        )
         tau = M @ ddqref
 
         data.qfrc_applied = (tau + f)[:, 0]
@@ -56,7 +58,7 @@ class DoublePendulum(MuJoCoBase):
         while not glfw.window_should_close(self.window):
             simstart = self.data.time
 
-            while (self.data.time - simstart < 1.0/60.0):
+            while self.data.time - simstart < 1.0 / 60.0:
                 # Step simulation environment
                 mj.mj_step(self.model, self.data)
 
@@ -64,13 +66,19 @@ class DoublePendulum(MuJoCoBase):
                 break
 
             # get framebuffer viewport
-            viewport_width, viewport_height = glfw.get_framebuffer_size(
-                self.window)
+            viewport_width, viewport_height = glfw.get_framebuffer_size(self.window)
             viewport = mj.MjrRect(0, 0, viewport_width, viewport_height)
 
             # Update scene and render
-            mj.mjv_updateScene(self.model, self.data, self.opt, None, self.cam,
-                               mj.mjtCatBit.mjCAT_ALL.value, self.scene)
+            mj.mjv_updateScene(
+                self.model,
+                self.data,
+                self.opt,
+                None,
+                self.cam,
+                mj.mjtCatBit.mjCAT_ALL.value,
+                self.scene,
+            )
             mj.mjr_render(viewport, self.scene, self.context)
 
             # swap OpenGL buffers (blocking call due to v-sync)
@@ -83,7 +91,8 @@ class DoublePendulum(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/doublependulum.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/doublependulum.xml"
     sim = DoublePendulum(xml_path)
     sim.reset()
     sim.simulate()
