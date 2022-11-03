@@ -3,6 +3,7 @@ import numpy as np
 from mujoco.glfw import glfw
 
 from PyMuJoCoBase.mujoco_base import MuJoCoBase
+from PyMuJoCoBase import getDataPath
 
 
 class A1Sim(MuJoCoBase):
@@ -57,7 +58,8 @@ class A1Sim(MuJoCoBase):
 
 
 def main():
-    xml_path = "./xml/a1/xml/a1.xml"
+    data_path = getDataPath()
+    xml_path = data_path + "/xml/a1/xml/a1.xml"
     sim = A1Sim(xml_path)
     sim.reset()
     sim.simulate()
