@@ -36,17 +36,23 @@ to `simulate()`, please refer to `example_manipulator_ik.py` for this usage. Thi
 All of the examples in the [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html) are translated into Python. The examples include:
 
 ```[Markdown]
-- Projectile with drag
-- Control a simple pendulum
-- Control a double pendulum
-- Leg swing
-- Manipulator drawing
-- Control an underactuated pendulum
-- Gymnast swing/release on a bar
-- 2D Hopper
-- Initial Value Problem
-- Inverse Kinematics
-- 2D Biped
+- Projectile with drag (pymjbase-projectile-example)
+- Control a simple pendulum (pymjbase-pendulum-example)
+- Control a double pendulum (pymjbase-dbpendulum-example)
+- Leg swing (pymjbase-leg-swing-example)
+- Manipulator drawing (pymjbase-manipulator-drawing-example)
+- Control an underactuated pendulum (pymjbase-underactuated-pendulum-example)
+- Gymnast swing/release on a bar (pymjbase-gymnast-example)
+- 2D Hopper (pymjbase-hopper-example)
+- Initial Value Problem (pymjbase-ivp-example)
+- Inverse Kinematics (pymjbase-manipulator-ik-example)
+- 2D Biped (pymjbase-biped-example)
+```
+
+Run the command in the parenthesis to see the example, for example, to run the inverse kinematics example we can use the command:
+
+```console
+pymjbase-manipulator-ik-example
 ```
 
 ## NLOPT
