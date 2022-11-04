@@ -34,12 +34,7 @@ class Acrobot(MuJoCoBase):
         This function implements a LQR controller for balancing.
         """
         state = np.array(
-            [
-                [data.qpos[0]],
-                [data.qvel[0]],
-                [data.qpos[1]],
-                [data.qvel[1]],
-            ]
+            [[data.qpos[0]], [data.qvel[0]], [data.qpos[1]], [data.qvel[1]],]
         )
         data.ctrl[0] = (self.K @ state)[0, 0]
 

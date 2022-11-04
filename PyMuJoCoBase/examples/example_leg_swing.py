@@ -78,25 +78,25 @@ class LegSwing(MuJoCoBase):
             q_ref = (
                 self.a_swing1[0]
                 + self.a_swing1[1] * time
-                + self.a_swing1[2] * (time**2)
-                + self.a_swing1[3] * (time**3)
+                + self.a_swing1[2] * (time ** 2)
+                + self.a_swing1[3] * (time ** 3)
             )
             dq_ref = (
                 self.a_swing1[1]
                 + 2 * self.a_swing1[2] * time
-                + 3 * self.a_swing1[3] * (time**2)
+                + 3 * self.a_swing1[3] * (time ** 2)
             )
         elif self.fsm_state == FSM_SWING2:
             q_ref = (
                 self.a_swing2[0]
                 + self.a_swing2[1] * time
-                + self.a_swing2[2] * (time**2)
-                + self.a_swing2[3] * (time**3)
+                + self.a_swing2[2] * (time ** 2)
+                + self.a_swing2[3] * (time ** 3)
             )
             dq_ref = (
                 self.a_swing2[1]
                 + 2 * self.a_swing2[2] * time
-                + 3 * self.a_swing2[3] * (time**2)
+                + 3 * self.a_swing2[3] * (time ** 2)
             )
         elif self.fsm_state == FSM_STOP:
             q_ref = self.q_end
@@ -152,7 +152,7 @@ class LegSwing(MuJoCoBase):
         q(t0) = q0, q(tf) = qf, dq(t0) = 0, dq(tf) = 0
         """
         tf_t0_3 = (tf - t0) ** 3
-        a0 = qf * (t0**2) * (3 * tf - t0) + q0 * (tf**2) * (tf - 3 * t0)
+        a0 = qf * (t0 ** 2) * (3 * tf - t0) + q0 * (tf ** 2) * (tf - 3 * t0)
         a0 = a0 / tf_t0_3
 
         a1 = 6 * t0 * tf * (q0 - qf)

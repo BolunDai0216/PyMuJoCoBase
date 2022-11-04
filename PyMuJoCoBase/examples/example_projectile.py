@@ -32,7 +32,7 @@ class Projectile(MuJoCoBase):
         F = (cv^Tv)v / ||v||
         """
         vx, vy, vz = self.data.qvel[0], self.data.qvel[1], self.data.qvel[2]
-        v = np.sqrt(vx**2 + vy**2 + vz**2)
+        v = np.sqrt(vx ** 2 + vy ** 2 + vz ** 2)
         c = 1.0
         self.data.qfrc_applied[0] = -c * v * vx
         self.data.qfrc_applied[1] = -c * v * vy
