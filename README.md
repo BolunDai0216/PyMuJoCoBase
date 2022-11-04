@@ -2,6 +2,16 @@
 
 This repo contains starter code and examples for running simulations in MuJoCo with its Python bindings. This repo is inspired by the C code developed for Prof.Pranav Bhounsule's [MuJoCo Bootcamp](https://pab47.github.io/mujoco.html).
 
+## Installation
+
+To install `PyMuJoCoBase`, run the following commands
+
+```console
+git clone https://github.com/BolunDai0216/PyMuJoCoBase.git
+cd PyMuJoCoBase
+python3 -m pip install .
+```
+
 ## Contents
 
 The main purpose of this repo is providing the starter code required to run a MuJoCo simulation with keyboard and mouse callbacks using its Python bindings. The base class is in `mujoco_base.py`. To create your own MuJoCo simulation, you can create a new class that inherits `mujoco_base.MuJoCoBase`. An example of this usage is provided in `example_projectile.py`, the new class should implement the functions
