@@ -4,8 +4,8 @@ from mujoco.glfw import glfw
 from numpy.linalg import inv
 from scipy.spatial.transform import Rotation as R
 
-from PyMuJoCoBase.mujoco_base import MuJoCoBase
 from PyMuJoCoBase import getDataPath
+from PyMuJoCoBase.mujoco_base import MuJoCoBase
 
 FSM_LEG1_SWING = 0
 FSM_LEG2_SWING = 1
@@ -22,7 +22,10 @@ class Biped(MuJoCoBase):
         super().__init__(xml_path)
         self.simend = 30.0
 
+        # Finite State Machine for the hip
         self.fsm_hip = None
+
+        # Finite State Machines for the knees
         self.fsm_knee1 = None
         self.fsm_knee2 = None
 
