@@ -4,7 +4,13 @@ This repo contains starter code and examples for running simulations in MuJoCo w
 
 ## Installation
 
-To install `PyMuJoCoBase`, run the following commands
+First, install the Python bindings for mujoco
+
+```console
+python3 -m pip install mujoco
+```
+
+Then, run the following commands to install `PyMuJoCoBase`
 
 ```console
 git clone https://github.com/BolunDai0216/PyMuJoCoBase.git
