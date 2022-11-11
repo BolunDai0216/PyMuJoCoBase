@@ -4,7 +4,7 @@ This repo contains starter code and examples for running simulations in MuJoCo w
 
 ## Installation
 
-First, install the Python bindings for MuJoCo (newly test on v2.3.0)
+First, install the Python bindings for MuJoCo (newly tested on v2.3.0)
 
 ```console
 python3 -m pip install mujoco
