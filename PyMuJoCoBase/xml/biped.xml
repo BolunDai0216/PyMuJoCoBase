@@ -5,7 +5,7 @@
 	</visual>
 
 	<option timestep="0.001" integrator="RK4" gravity="0 0 0">
-		<flag sensornoise="disable" contact="enable" energy="enable"/>
+		<flag contact="enable" energy="enable"/>
 	</option>
 
 	<worldbody>

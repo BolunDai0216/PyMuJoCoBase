@@ -1,6 +1,6 @@
 <mujoco>
 	<option timestep="0.0001" integrator="RK4" >
-		<flag sensornoise="enable" energy="enable" contact="enable" />
+		<flag energy="enable" contact="enable"/>
 	</option>
 	<worldbody>
         <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
