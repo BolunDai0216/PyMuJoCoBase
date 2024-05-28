@@ -1,6 +1,6 @@
 <mujoco>
 	<option timestep="0.001" integrator="RK4" gravity="0 0 0">
-		<flag sensornoise="enable" energy="enable" contact="disable" />
+		<flag energy="enable" contact="disable" />
 	</option>
 	<worldbody>
         <light diffuse=".5 .5 .5" pos="0 0 3" dir="0 0 -1"/>
@@ -22,7 +22,7 @@
 		<velocity name="vservo2" joint="pin2" kv="10" />
 	</actuator>
 	<sensor>
-		<framepos  objtype='site' objname='tip' />
-		<framelinvel  objtype='site' objname='tip' />
+		<framepos  objtype='site' objname='tip' noise="0.001"/>
+		<framelinvel  objtype='site' objname='tip' noise="0.001"/>
 	</sensor>
 </mujoco>
