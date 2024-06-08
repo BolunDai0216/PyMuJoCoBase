@@ -35,8 +35,11 @@ class Gymnast(MuJoCoBase):
         This function implements a controller that
         mimics the forces of a fixed joint before release
         """
-        # Get constraint Jacobian
-        J = data.efc_J[:3, :3]
+
+        # Get constraint jacobian (mData.efc_J : if expresssed in dense format is simply flattened 2D matrix, if in sparsed format then it will will be stored in CSR sparse format)
+        J = data.efc_J[:3]
+        J = np.vstack((J, data.efc_J[6:9]))
+        J = np.vstack((J, data.efc_J[12:15]))
 
         # Get constraint force
         F0 = data.efc_force[:3][:, np.newaxis]
